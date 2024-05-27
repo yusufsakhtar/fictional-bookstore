@@ -1,22 +1,21 @@
 package models
 
-type Inventory struct {
-	Items []Item `json:"items"`
+const (
+	InventoryItemStatusAvailable   = "available"
+	InventoryItemStatusPendingSale = "pending_sale"
+)
+
+type InventoryItem struct {
+	Item  *Item               `json:"item"`
+	Stock *InventoryItemStock `json:"stock"`
 }
 
-func (i *Inventory) AddItem(item Item) {
-	i.Items = append(i.Items, item)
+type InventoryItemStock struct {
+	Total       int `json:"total"`
+	Available   int `json:"available"`
+	PendingSale int `json:"pending_sale"`
 }
 
-func (i *Inventory) GetItems() []Item {
-	return i.Items
-}
-
-func (i *Inventory) GetItemBySKU(sku string) Item {
-	for _, i := range i.Items {
-		if i.SKU == sku {
-			return i
-		}
-	}
-	return Item{}
+func (i *InventoryItemStock) IsInStock() bool {
+	return i.Available > 0
 }
