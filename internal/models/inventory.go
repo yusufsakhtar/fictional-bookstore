@@ -11,11 +11,6 @@ type InventoryItem struct {
 }
 
 type InventoryItemStock struct {
-	Total       int `json:"total"`
 	Available   int `json:"available"`
 	PendingSale int `json:"pending_sale"`
-}
-
-func (i *InventoryItemStock) IsInStock() bool {
-	return i.Available > 0
 }

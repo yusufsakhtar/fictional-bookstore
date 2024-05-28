@@ -11,7 +11,7 @@ var ErrItemNotFound = errors.New("item not found")
 
 // Using these interfaces to abstract away the details of the data store from the service layer.
 // TODO: implement these interfaces using SQLITE as data store.
-type UsersRepo interface {
+type UserRepo interface {
 	CreateUser(input CreateUserInput) error
 	GetUser(input GetUserInput) (*models.User, error)
 	DeleteUser(input DeleteUserInput) error
@@ -21,11 +21,11 @@ type UsersRepo interface {
 // Most of these methods would be used as part of an admin console in the product.
 // Admin users would manage the inventory.
 type InventoryRepo interface {
-	CreateItem(input CreateInventoryItemInput) error
-	GetItem(input GetInventoryItemInput) (*models.Item, error)
-	GetItemStock(input GetInventoryItemStockInput) (*models.InventoryItemStock, error)
-	DeleteItem(input DeleteInventoryItemInput) error
-	ListItems() ([]*models.Item, error)
+	CreateInventoryItem(input CreateInventoryItemInput) error
+	GetInventoryItem(input GetInventoryItemInput) (*models.InventoryItem, error)
+	GetInventoryItemStock(input GetInventoryItemStockInput) (*models.InventoryItemStock, error)
+	DeleteInventoryItem(input DeleteInventoryItemInput) error
+	ListInventoryItems() ([]*models.InventoryItem, error)
 }
 
 type GetUserInput struct {
