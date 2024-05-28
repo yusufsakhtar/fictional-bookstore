@@ -11,6 +11,7 @@ type InventoryItem struct {
 }
 
 type InventoryItemStock struct {
+	// We could potentially further separate Available into in_cart and fully_available
 	Available   int `json:"available"`
 	PendingSale int `json:"pending_sale"`
 }

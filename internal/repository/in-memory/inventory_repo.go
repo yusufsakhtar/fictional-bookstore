@@ -108,3 +108,43 @@ func (r *InMemoryInventoryRepo) ListInventoryItems() ([]*models.InventoryItem, e
 	}
 	return items, nil
 }
+
+// UpdateInventoryItem updates an inventory item.
+func (r *InMemoryInventoryRepo) UpdateInventoryItem(input repository.UpdateInventoryItemInput) error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	item, ok := r.inventory[input.SKU]
+	if !ok {
+		return repository.ErrItemNotFound
+	}
+
+	if input.DisplayName != nil {
+		item.Item.DisplayName = *input.DisplayName
+	}
+	if input.Price != nil {
+		item.Item.Price = *input.Price
+	}
+	if input.Stock != nil {
+		item.Stock.Available = *input.Stock
+	}
+
+	return nil
+}
+
+func (r *InMemoryInventoryRepo) UpdateInventoryItemStock(input repository.UpdateInventoryItemStockInput) error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	item, ok := r.inventory[input.SKU]
+	if !ok {
+		return repository.ErrItemNotFound
+	}
+
+	item.Stock.Available -= input.AvailableConvertingToPendingSale
+	if item.Stock.Available < 0 {
+		return repository.ErrInsufficientStock
+	}
+	item.Stock.PendingSale += input.AvailableConvertingToPendingSale
+	return nil
+}

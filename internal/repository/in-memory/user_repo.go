@@ -42,7 +42,7 @@ func NewInMemoryUserRepo(seedFromFile bool, seedFileName string) *InMemoryUserRe
 	}
 }
 
-func (r *InMemoryUserRepo) CreateUser(input repository.CreateUserInput) error {
+func (r *InMemoryUserRepo) CreateUser(input repository.CreateUserInput) (*models.User, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -51,9 +51,8 @@ func (r *InMemoryUserRepo) CreateUser(input repository.CreateUserInput) error {
 		ID:        newId,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
-		Cart:      &models.Cart{},
 	}
-	return nil
+	return r.users[newId], nil
 }
 
 func (r *InMemoryUserRepo) GetUser(input repository.GetUserInput) (*models.User, error) {

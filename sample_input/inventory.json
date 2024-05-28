@@ -1,14 +1,24 @@
 {
-    "item1": {
-        "ID": "item1",
-        "Name": "Item One",
-        "Description": "This is item one",
-        "Price": 10.0
+    "sku1": {
+        "Item": {
+            "SKU": "sku1",
+            "DisplayName": "Item One",
+            "Price": 10.0
+        },
+        "Stock": {
+            "Available": 100,
+            "PendingSale": 0
+        }
     },
-    "item2": {
-        "ID": "item2",
-        "Name": "Item Two",
-        "Description": "This is item two",
-        "Price": 20.0
+    "sku2": {
+        "Item": {
+            "SKU": "sku2",
+            "DisplayName": "Item Two",
+            "Price": 20.0
+        },
+        "Stock": {
+            "Available": 200,
+            "PendingSale": 0
+        }
     }
 }

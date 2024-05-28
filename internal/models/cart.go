@@ -1,5 +1,7 @@
 package models
 
 type Cart struct {
-	Items []Item `json:"items"`
+	UserID  string   `json:"user_id"`
+	ID      string   `json:"id"`
+	ItemIds []string `json:"item_ids"`
 }
