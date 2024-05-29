@@ -52,8 +52,6 @@ func ConfirmOrder(ordersvc *service.OrderService) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		// FIXME
-		json.NewEncoder(w).Encode(nil)
+		w.WriteHeader(http.StatusAccepted)
 	}
 }
