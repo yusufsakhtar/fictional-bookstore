@@ -6,11 +6,14 @@ import (
 	"github.com/yusufsakhtar/playstation-assignment/internal/models"
 )
 
+// TODO: move these to a pkg/errors
 var ErrUserNotFound = errors.New("user not found")
 var ErrItemNotFound = errors.New("item not found")
 var ErrInsufficientStock = errors.New("insufficient stock")
 var ErrCartNotFound = errors.New("cart not found")
 var ErrCartAlreadyExistsForUser = errors.New("cart already exists for given user")
+var ErrOrderNotFound = errors.New("order not found")
+var ErrOrderAlreadyExistsForCart = errors.New("order already exists for given cart")
 
 // Using these interfaces to abstract away the details of the data store from the service layer.
 // In a next iteration, we could implement these interfaces using SQLITE as the data store.
@@ -36,8 +39,23 @@ type InventoryRepo interface {
 type CartRepo interface {
 	CreateCart(input CreateCartInput) error
 	GetCart(input GetCartInput) (*models.Cart, error)
+	ListCarts() ([]*models.Cart, error)
 	GetUserCart(input GetUserCartInput) (*models.Cart, error)
 	AddItemsToUserCart(input AddItemsToUserCartInput) error
+}
+
+type OrderRepo interface {
+	CreateOrder(input CreateOrderInput) (*models.Order, error)
+	UpdateOrderStatus(input UpdateOrderStatusInput) error
+	UpdateOrder(input UpdateOrderInput) error
+	ListOrders() ([]*models.Order, error)
+	GetOrder(input GetOrderInput) (*models.Order, error)
+}
+
+// TODO: implement this as part of extending the checkout/order flow to account for payment
+type PaymentRepo interface {
+	CreatePaymentMethod(input CreatePaymentMethodInput) error
+	GetPaymentMethod(input GetPaymentMethodInput) (*models.PaymentMethod, error)
 }
 
 type GetUserInput struct {
@@ -79,6 +97,7 @@ type UpdateInventoryItemInput struct {
 	Stock       *int     `json:"stock,omitempty"`
 }
 
+// Not super happy with the interface here. The goal was to provide a way to update stock without needing to set each of the total/available/pending stock explicitly - Im sure there's a better way to do this but sticking with this for now.
 type UpdateInventoryItemStockInput struct {
 	SKU                              string `json:"sku"`
 	AvailableConvertingToPendingSale int    `json:"available_converting_to_pending_sale"`
@@ -104,4 +123,35 @@ type AddItemsToUserCartInput struct {
 type AddItemsToUserCartOutput struct {
 	SKUsAdded  []string `json:"skus_added"`
 	SKUsFailed []string `json:"skus_failed"`
+}
+
+type CreateOrderInput struct {
+	UserID string   `json:"user_id"`
+	CartID string   `json:"cart_id"`
+	SKUs   []string `json:"skus"`
+}
+
+type UpdateOrderStatusInput struct {
+	ID     string             `json:"id"`
+	Status models.OrderStatus `json:"status"`
+}
+
+type UpdateOrderInput struct {
+	ID      string             `json:"id"`
+	UserID  string             `json:"user_id"`
+	ItemIDs []string           `json:"item_ids"`
+	Status  models.OrderStatus `json:"status"`
+}
+
+type CreatePaymentMethodInput struct {
+	Type    models.PaymentMethodType `json:"type"`
+	Balance float64                  `json:"balance"`
+}
+
+type GetPaymentMethodInput struct {
+	ID string `json:"id"`
+}
+
+type GetOrderInput struct {
+	ID string `json:"id"`
 }

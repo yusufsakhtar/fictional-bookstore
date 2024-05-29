@@ -6,13 +6,34 @@ import (
 	"github.com/yusufsakhtar/playstation-assignment/internal/service"
 )
 
-func RegisterHandlers(mux *mux.Router, userService *service.UserService, cartService *service.CartService, inventoryRepo repository.InventoryRepo, userRepo repository.UserRepo, cartRepo repository.CartRepo) {
+func RegisterHandlers(
+	mux *mux.Router,
+	userService *service.UserService,
+	cartService *service.CartService,
+	checkoutService *service.CheckoutService,
+	inventoryRepo repository.InventoryRepo,
+	userRepo repository.UserRepo,
+	cartRepo repository.CartRepo,
+	orderRepo repository.OrderRepo,
+) {
 	mux.HandleFunc("/users", ListUsers(userService)).Methods("GET")
 	mux.HandleFunc("/users", CreateUser(userService)).Methods("POST")
 	mux.HandleFunc("/users/{id}", GetUser(userService)).Methods("GET")
 	mux.HandleFunc("/users/{id}", DeleteUser(userService)).Methods("DELETE")
 	mux.HandleFunc("/users/{id}/cart", GetUserCart(userService)).Methods("GET")
+	// TODO: change to POST? Patch is more "idiomatic" but POST is more commonly used
+	// TODO: move logic to /carts/{id} (I wrote this before I went deeper into cart/order/checkout logic)
 	mux.HandleFunc("/users/{id}/cart", AddItemsToUserCart(cartService)).Methods("PATCH")
+
+	mux.HandleFunc("/carts", ListCarts(cartService)).Methods("GET")
+	mux.HandleFunc("/carts/{id}", GetCart(cartService)).Methods("GET")
+	mux.HandleFunc("/carts/{id}/checkout", CheckoutCart(checkoutService)).Methods("POST")
+
+	mux.HandleFunc("/orders", ListOrders(orderRepo)).Methods("GET")
+	mux.HandleFunc("/orders/{id}", GetOrder(orderRepo)).Methods("GET")
+	// mux.HandleFunc("/orders/{id}/confirm", ConfirmOrder(orderRepo)).Methods("POST")
+	// TODO
+	// mux.HandleFunc("/orders/{id}/cancel", CancelOrder(orderRepo)).Methods("POST")
 
 	mux.HandleFunc("/inventory", ListInventory(inventoryRepo)).Methods("GET")
 	mux.HandleFunc("/inventory", CreateInventoryItem(inventoryRepo)).Methods("POST")

@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 
+	"github.com/yusufsakhtar/playstation-assignment/internal/models"
 	"github.com/yusufsakhtar/playstation-assignment/internal/repository"
 )
 
@@ -38,4 +39,12 @@ func (s *CartService) AddItemsToUserCart(input repository.AddItemsToUserCartInpu
 		return nil, err
 	}
 	return &response, nil
+}
+
+func (s *CartService) GetCart(input repository.GetCartInput) (*models.Cart, error) {
+	return s.cartRepo.GetCart(input)
+}
+
+func (s *CartService) ListCarts() ([]*models.Cart, error) {
+	return s.cartRepo.ListCarts()
 }

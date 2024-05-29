@@ -1,0 +1,12 @@
+[
+    {
+        "id": "cart1",
+        "user_id": "user1",
+        "item_ids": ["sku1", "sku2"]
+    },
+    {
+        "id": "cart2",
+        "user_id": "user2",
+        "item_ids": ["sku1"]
+    }
+]

@@ -34,6 +34,7 @@ func (s *UserService) GetUser(input repository.GetUserInput) (*models.User, erro
 	return s.userRepo.GetUser(input)
 }
 
+// TODO: move this to  cart service (cart svc didnt exist initially, this code felt like an ok fit here for a time)
 func (s *UserService) GetUserCart(input repository.GetUserCartInput) (*models.Cart, error) {
 	cart, err := s.cartRepo.GetUserCart(input)
 	if err != nil {
