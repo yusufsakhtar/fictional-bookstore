@@ -28,10 +28,10 @@ func GetCart(cartSvc *service.CartService) http.HandlerFunc {
 	}
 }
 
-func CheckoutCart(checkoutSvc *service.CartService) http.HandlerFunc {
+func CheckoutCart(cartSvc *service.CartService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		response, err := checkoutSvc.CheckoutCart(service.CheckoutInput{ID: id})
+		response, err := cartSvc.CheckoutCart(service.CheckoutInput{ID: id})
 		if err != nil {
 			if errors.Is(err, repository.ErrCartNotFound) {
 				http.Error(w, "cart not found", http.StatusNotFound)

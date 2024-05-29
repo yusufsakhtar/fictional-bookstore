@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -74,7 +73,6 @@ func UpdateInventoryItem(inventoryRepo repository.InventoryRepo) http.HandlerFun
 		updateInventoryItemInput.SKU = sku
 		if err := inventoryRepo.UpdateInventoryItem(updateInventoryItemInput); err != nil {
 			http.Error(w, "Unable to update inventory item", http.StatusInternalServerError)
-			fmt.Printf("UpdateInventoryItem Error: %v\n", err)
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)

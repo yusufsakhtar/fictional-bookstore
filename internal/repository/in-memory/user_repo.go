@@ -11,6 +11,7 @@ import (
 	"github.com/yusufsakhtar/playstation-assignment/internal/repository"
 )
 
+// TODO: need a User Service to match pattern elsewhere
 type InMemoryUserRepo struct {
 	users map[string]*models.User
 	mu    sync.RWMutex

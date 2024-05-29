@@ -11,7 +11,7 @@ import (
 	"github.com/yusufsakhtar/playstation-assignment/internal/repository"
 )
 
-// InMemoryInventoryRepo is a repository that stores inventory data in memory.
+// TODO: need an Inventory Service to match pattern elsewhere
 type InMemoryInventoryRepo struct {
 	inventory map[string]*models.InventoryItem
 	mu        sync.RWMutex

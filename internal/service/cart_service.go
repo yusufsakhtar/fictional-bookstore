@@ -1,8 +1,6 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/yusufsakhtar/playstation-assignment/internal/models"
 	"github.com/yusufsakhtar/playstation-assignment/internal/repository"
 )
@@ -10,7 +8,7 @@ import (
 type CartService struct {
 	inventoryRepo repository.InventoryRepo
 	cartRepo      repository.CartRepo
-	orderRepo     repository.OrderRepo
+	orderService  *OrderService
 }
 
 type CheckoutInput struct {
@@ -23,11 +21,11 @@ type CheckoutOutput struct {
 	SKUsSucceeded []string
 }
 
-func NewCartService(inventoryRepo repository.InventoryRepo, cartRepo repository.CartRepo, orderRepo repository.OrderRepo) *CartService {
+func NewCartService(inventoryRepo repository.InventoryRepo, cartRepo repository.CartRepo, orderService *OrderService) *CartService {
 	return &CartService{
 		inventoryRepo: inventoryRepo,
 		cartRepo:      cartRepo,
-		orderRepo:     orderRepo,
+		orderService:  orderService,
 	}
 }
 
@@ -39,8 +37,24 @@ func (s *CartService) ListCarts() ([]*models.Cart, error) {
 	return s.cartRepo.ListCarts()
 }
 
+func (s *CartService) DeleteCart(input repository.DeleteCartInput) error {
+	return s.cartRepo.DeleteCart(input)
+}
+
 // TODO: improve both this method and the repo method for adding skus; need better resolution on why items failed to be added
 func (s *CartService) AddItemsToUserCart(input repository.AddItemsToUserCartInput) (*repository.AddItemsToUserCartOutput, error) {
+	_, err := s.cartRepo.GetUserCart(repository.GetUserCartInput{UserID: input.UserID})
+	if err != nil {
+		if err == repository.ErrCartNotFound {
+			err = s.cartRepo.CreateCart(repository.CreateCartInput{UserID: input.UserID})
+			if err != nil {
+				return nil, err
+			}
+			// return s.AddItemsToUserCart(input)
+		} else {
+			return nil, err
+		}
+	}
 	var response repository.AddItemsToUserCartOutput
 	for _, sku := range input.SKUs {
 		item, err := s.inventoryRepo.GetInventoryItem(repository.GetInventoryItemInput{SKU: sku})
@@ -53,14 +67,14 @@ func (s *CartService) AddItemsToUserCart(input repository.AddItemsToUserCartInpu
 			response.SKUsAdded = append(response.SKUsAdded, sku)
 		}
 	}
-	fmt.Printf("response before adding to cart: %+v\n", response)
-	err := s.cartRepo.AddItemsToUserCart(repository.AddItemsToUserCartInput{UserID: input.UserID, SKUs: response.SKUsAdded})
+	err = s.cartRepo.AddItemsToUserCart(repository.AddItemsToUserCartInput{UserID: input.UserID, SKUs: response.SKUsAdded})
 	if err != nil {
 		return nil, err
 	}
 	return &response, nil
 }
 
+// TODO: This probably needs its own service
 func (s *CartService) CheckoutCart(input CheckoutInput) (*CheckoutOutput, error) {
 	cart, err := s.cartRepo.GetCart(repository.GetCartInput{ID: input.ID})
 	if err != nil {
@@ -71,10 +85,9 @@ func (s *CartService) CheckoutCart(input CheckoutInput) (*CheckoutOutput, error)
 	var failedSKUs []string
 	var successSKUs []string
 
-	// Initialy create the order with all items user is attempting to buy
-	// Note: this could be a good candidate for a message on a queue in a distributed system
-	// TODO: change total on this struct to be a pointer to allow null values
-	order, err := s.orderRepo.CreateOrder(repository.CreateOrderInput{
+	// Creating and then updating the order as a loose idea of facilitating a transaction
+	// Dont want to update inventory stock without relating it back to an order.
+	order, err := s.orderService.CreateOrder(repository.CreateOrderInput{
 		UserID:  cart.UserID,
 		CartID:  cart.ID,
 		ItemIDs: cart.ItemIds,
@@ -105,9 +118,8 @@ func (s *CartService) CheckoutCart(input CheckoutInput) (*CheckoutOutput, error)
 			successSKUs = append(successSKUs, sku)
 		}
 	}
-	// Update order with specific items that were successfully purchased and pending status
-	// Note: this could be a good candidate for a message on a queue in a distributed system
-	err = s.orderRepo.UpdateOrder(repository.UpdateOrderInput{
+
+	err = s.orderService.UpdateOrder(repository.UpdateOrderInput{
 		ID: order.ID,
 		CreateOrderInput: repository.CreateOrderInput{
 			UserID:  order.UserID,

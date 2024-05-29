@@ -14,6 +14,7 @@ var ErrCartNotFound = errors.New("cart not found")
 var ErrCartAlreadyExistsForUser = errors.New("cart already exists for given user")
 var ErrOrderNotFound = errors.New("order not found")
 var ErrOrderAlreadyExistsForCart = errors.New("order already exists for given cart")
+var ErrInvalidOrderState = errors.New("invalid order state")
 
 // Using these interfaces to abstract away the details of the data store from the service layer.
 // In a next iteration, we could implement these interfaces using SQLITE as the data store.
@@ -42,6 +43,7 @@ type CartRepo interface {
 	ListCarts() ([]*models.Cart, error)
 	GetUserCart(input GetUserCartInput) (*models.Cart, error)
 	AddItemsToUserCart(input AddItemsToUserCartInput) error
+	DeleteCart(input DeleteCartInput) error
 }
 
 type OrderRepo interface {
@@ -152,4 +154,12 @@ type GetOrderInput struct {
 
 type GetOrderByCartIDInput struct {
 	CartID string `json:"cart_id"`
+}
+
+type ConfirmOrderInput struct {
+	ID string `json:"id"`
+}
+
+type DeleteCartInput struct {
+	ID string `json:"id"`
 }

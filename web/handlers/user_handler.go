@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/gorilla/mux"
 	"github.com/yusufsakhtar/playstation-assignment/internal/repository"
 	"github.com/yusufsakhtar/playstation-assignment/internal/service"
@@ -83,8 +81,6 @@ func AddItemsToUserCart(cartsvc *service.CartService) http.HandlerFunc {
 			http.Error(w, "Unable to add items to user cart", http.StatusInternalServerError)
 			return
 		}
-
-		fmt.Printf("response: %+v\n", response)
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)

@@ -30,8 +30,8 @@ func main() {
 		cartRepo = inmemoryrepo.NewInMemoryCartRepo(seedFromFiles, "sample_input/carts.json")
 		orderRepo = inmemoryrepo.NewInMemoryOrderRepo()
 		userService = service.NewUserService(userRepo, cartRepo)
-		cartService = service.NewCartService(inventoryRepo, cartRepo, orderRepo)
-		orderService = service.NewOrderService(orderRepo)
+		orderService = service.NewOrderService(orderRepo, inventoryRepo, cartRepo)
+		cartService = service.NewCartService(inventoryRepo, cartRepo, orderService)
 	} else {
 		log.Fatal("SQLite not implemented yet")
 	}

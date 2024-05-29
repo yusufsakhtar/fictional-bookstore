@@ -101,3 +101,12 @@ func (r *InMemoryCartRepo) ListCarts() ([]*models.Cart, error) {
 	}
 	return carts, nil
 }
+
+func (r *InMemoryCartRepo) DeleteCart(input repository.DeleteCartInput) error {
+	cart, ok := r.cartsById[input.ID]
+	if ok {
+		delete(r.cartsByUserId, cart.UserID)
+	}
+	delete(r.cartsById, input.ID)
+	return nil
+}

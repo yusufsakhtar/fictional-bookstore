@@ -31,7 +31,7 @@ func RegisterHandlers(
 
 	mux.HandleFunc("/orders", ListOrders(orderService)).Methods("GET")
 	mux.HandleFunc("/orders/{id}", GetOrder(orderService)).Methods("GET")
-	// mux.HandleFunc("/orders/{id}/confirm", ConfirmOrder(orderRepo)).Methods("POST")
+	mux.HandleFunc("/orders/{id}/confirm", ConfirmOrder(orderService)).Methods("POST")
 	// TODO
 	// mux.HandleFunc("/orders/{id}/cancel", CancelOrder(orderRepo)).Methods("POST")
 
