@@ -12,13 +12,14 @@ type CartService struct {
 }
 
 type CheckoutInput struct {
-	ID string
+	ID string `json:"id"`
 }
 
 type CheckoutOutput struct {
-	Total         float64
-	SKUsFailed    []string
-	SKUsSucceeded []string
+	OrderID       string   `json:"order_id"`
+	Total         float64  `json:"total"`
+	SKUsFailed    []string `json:"skus_failed"`
+	SKUsSucceeded []string `json:"skus_succeeded"`
 }
 
 func NewCartService(inventoryRepo repository.InventoryRepo, cartRepo repository.CartRepo, orderService *OrderService) *CartService {
@@ -134,5 +135,5 @@ func (s *CartService) CheckoutCart(input CheckoutInput) (*CheckoutOutput, error)
 	}
 
 	// you can imagine another service being used here to calculate taxes, discounts, etc. here
-	return &CheckoutOutput{Total: total, SKUsFailed: failedSKUs, SKUsSucceeded: successSKUs}, nil
+	return &CheckoutOutput{OrderID: order.ID, Total: total, SKUsFailed: failedSKUs, SKUsSucceeded: successSKUs}, nil
 }
