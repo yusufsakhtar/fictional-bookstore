@@ -31,12 +31,9 @@ func (r *InMemoryOrderRepo) CreateOrder(input repository.CreateOrderInput) (*mod
 		ID:      uuid.New().String(),
 		UserID:  input.UserID,
 		CartID:  input.CartID,
-		ItemIDs: input.SKUs,
+		ItemIDs: input.ItemIDs,
+		Total:   input.Total,
 		Status:  models.OrderStatusCreated,
-	}
-
-	if _, ok := r.ordersByCartId[input.CartID]; ok {
-		return nil, repository.ErrOrderAlreadyExistsForCart
 	}
 
 	r.ordersByUserId[input.UserID] = append(r.ordersByUserId[input.UserID], order)
@@ -44,16 +41,6 @@ func (r *InMemoryOrderRepo) CreateOrder(input repository.CreateOrderInput) (*mod
 	r.ordersByCartId[input.CartID] = order
 
 	return order, nil
-}
-
-func (r *InMemoryOrderRepo) UpdateOrderStatus(input repository.UpdateOrderStatusInput) error {
-	order, ok := r.ordersById[input.ID]
-	if !ok {
-		return repository.ErrOrderNotFound
-	}
-
-	order.Status = input.Status
-	return nil
 }
 
 func (r *InMemoryOrderRepo) UpdateOrder(input repository.UpdateOrderInput) error {
@@ -78,6 +65,14 @@ func (r *InMemoryOrderRepo) ListOrders() ([]*models.Order, error) {
 
 func (r *InMemoryOrderRepo) GetOrder(input repository.GetOrderInput) (*models.Order, error) {
 	order, ok := r.ordersById[input.ID]
+	if !ok {
+		return nil, repository.ErrOrderNotFound
+	}
+	return order, nil
+}
+
+func (r *InMemoryOrderRepo) GetOrderByCartID(input repository.GetOrderByCartIDInput) (*models.Order, error) {
+	order, ok := r.ordersByCartId[input.CartID]
 	if !ok {
 		return nil, repository.ErrOrderNotFound
 	}

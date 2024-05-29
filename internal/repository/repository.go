@@ -46,10 +46,10 @@ type CartRepo interface {
 
 type OrderRepo interface {
 	CreateOrder(input CreateOrderInput) (*models.Order, error)
-	UpdateOrderStatus(input UpdateOrderStatusInput) error
 	UpdateOrder(input UpdateOrderInput) error
 	ListOrders() ([]*models.Order, error)
 	GetOrder(input GetOrderInput) (*models.Order, error)
+	GetOrderByCartID(input GetOrderByCartIDInput) (*models.Order, error)
 }
 
 // TODO: implement this as part of extending the checkout/order flow to account for payment
@@ -126,21 +126,15 @@ type AddItemsToUserCartOutput struct {
 }
 
 type CreateOrderInput struct {
-	UserID string   `json:"user_id"`
-	CartID string   `json:"cart_id"`
-	SKUs   []string `json:"skus"`
-}
-
-type UpdateOrderStatusInput struct {
-	ID     string             `json:"id"`
-	Status models.OrderStatus `json:"status"`
-}
-
-type UpdateOrderInput struct {
-	ID      string             `json:"id"`
 	UserID  string             `json:"user_id"`
-	ItemIDs []string           `json:"item_ids"`
+	CartID  string             `json:"cart_id"`
+	ItemIDs []string           `json:"skus"`
+	Total   float64            `json:"total"`
 	Status  models.OrderStatus `json:"status"`
+}
+type UpdateOrderInput struct {
+	ID string `json:"id"`
+	CreateOrderInput
 }
 
 type CreatePaymentMethodInput struct {
@@ -154,4 +148,8 @@ type GetPaymentMethodInput struct {
 
 type GetOrderInput struct {
 	ID string `json:"id"`
+}
+
+type GetOrderByCartIDInput struct {
+	CartID string `json:"cart_id"`
 }

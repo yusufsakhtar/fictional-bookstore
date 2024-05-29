@@ -28,7 +28,7 @@ func GetCart(cartSvc *service.CartService) http.HandlerFunc {
 	}
 }
 
-func CheckoutCart(checkoutSvc *service.CheckoutService) http.HandlerFunc {
+func CheckoutCart(checkoutSvc *service.CartService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
 		response, err := checkoutSvc.CheckoutCart(service.CheckoutInput{ID: id})

@@ -22,7 +22,7 @@ func main() {
 	var orderRepo repository.OrderRepo
 	var userService *service.UserService
 	var cartService *service.CartService
-	var checkoutService *service.CheckoutService
+	var orderService *service.OrderService
 
 	if useInMemory {
 		inventoryRepo = inmemoryrepo.NewInMemoryInventoryRepo(seedFromFiles, "sample_input/inventory.json")
@@ -30,14 +30,14 @@ func main() {
 		cartRepo = inmemoryrepo.NewInMemoryCartRepo(seedFromFiles, "sample_input/carts.json")
 		orderRepo = inmemoryrepo.NewInMemoryOrderRepo()
 		userService = service.NewUserService(userRepo, cartRepo)
-		cartService = service.NewCartService(inventoryRepo, cartRepo)
-		checkoutService = service.NewCheckoutService(inventoryRepo, cartRepo, orderRepo)
+		cartService = service.NewCartService(inventoryRepo, cartRepo, orderRepo)
+		orderService = service.NewOrderService(orderRepo)
 	} else {
 		log.Fatal("SQLite not implemented yet")
 	}
 
 	mux := mux.NewRouter()
-	handlers.RegisterHandlers(mux, userService, cartService, checkoutService, inventoryRepo, userRepo, cartRepo, orderRepo)
+	handlers.RegisterHandlers(mux, userService, cartService, orderService, inventoryRepo, userRepo, cartRepo, orderRepo)
 
 	log.Println("Starting server on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

@@ -7,12 +7,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/yusufsakhtar/playstation-assignment/internal/repository"
+	"github.com/yusufsakhtar/playstation-assignment/internal/service"
 )
 
-func GetOrder(orderRepo repository.OrderRepo) http.HandlerFunc {
+func GetOrder(ordersvc *service.OrderService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := mux.Vars(r)["id"]
-		order, err := orderRepo.GetOrder(repository.GetOrderInput{ID: id})
+		order, err := ordersvc.GetOrder(repository.GetOrderInput{ID: id})
 		if err != nil {
 			if errors.Is(err, repository.ErrOrderNotFound) {
 				http.Error(w, "order not found", http.StatusNotFound)
@@ -26,9 +27,9 @@ func GetOrder(orderRepo repository.OrderRepo) http.HandlerFunc {
 	}
 }
 
-func ListOrders(orderRepo repository.OrderRepo) http.HandlerFunc {
+func ListOrders(ordersvc *service.OrderService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		orders, err := orderRepo.ListOrders()
+		orders, err := ordersvc.ListOrders()
 		if err != nil {
 			http.Error(w, "internal server error: "+err.Error(), http.StatusInternalServerError)
 			return

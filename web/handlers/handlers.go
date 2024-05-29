@@ -10,7 +10,7 @@ func RegisterHandlers(
 	mux *mux.Router,
 	userService *service.UserService,
 	cartService *service.CartService,
-	checkoutService *service.CheckoutService,
+	orderService *service.OrderService,
 	inventoryRepo repository.InventoryRepo,
 	userRepo repository.UserRepo,
 	cartRepo repository.CartRepo,
@@ -27,10 +27,10 @@ func RegisterHandlers(
 
 	mux.HandleFunc("/carts", ListCarts(cartService)).Methods("GET")
 	mux.HandleFunc("/carts/{id}", GetCart(cartService)).Methods("GET")
-	mux.HandleFunc("/carts/{id}/checkout", CheckoutCart(checkoutService)).Methods("POST")
+	mux.HandleFunc("/carts/{id}/checkout", CheckoutCart(cartService)).Methods("POST")
 
-	mux.HandleFunc("/orders", ListOrders(orderRepo)).Methods("GET")
-	mux.HandleFunc("/orders/{id}", GetOrder(orderRepo)).Methods("GET")
+	mux.HandleFunc("/orders", ListOrders(orderService)).Methods("GET")
+	mux.HandleFunc("/orders/{id}", GetOrder(orderService)).Methods("GET")
 	// mux.HandleFunc("/orders/{id}/confirm", ConfirmOrder(orderRepo)).Methods("POST")
 	// TODO
 	// mux.HandleFunc("/orders/{id}/cancel", CancelOrder(orderRepo)).Methods("POST")
